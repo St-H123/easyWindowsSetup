@@ -1,7 +1,0 @@
-steam
-epicgameslauncher
-ubisoft-connect
-geforce-game-ready-driver
-ea-app
-msiafterburner
-goggalaxy

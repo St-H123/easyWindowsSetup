@@ -42,4 +42,4 @@ goggalaxy
 
 ## Updating
 
-to update the packages, run the `update.ps1` script.
+to update the packages, run the `.\update.ps1` script.

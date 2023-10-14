@@ -1,8 +1,0 @@
-jre8
-python3
-git.install
-vscode
-filezilla
-nodejs
-php
-virtualbox
