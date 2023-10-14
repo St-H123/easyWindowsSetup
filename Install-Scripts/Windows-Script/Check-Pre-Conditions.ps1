@@ -1,9 +1,6 @@
 # check if the pre-conditions have been met for any of the functions
 function Test-Pre-Conditions {
 
-    # Explaination for Constants
-    $withError = 1
-
     # Checking Windows Version Minimum Requirements
     $windowsVersion = ([Environment]::OSVersion.Version)
     $windowsVersionIsAtleastVersion7 = ($windowsVersion -lt [Version]"6.1")
@@ -12,7 +9,7 @@ function Test-Pre-Conditions {
             "You must have Windows 7 or higher to use Chocolatey.`n" +
             "You are using Windows version: $windowsVersion.")
         Write-Error $message
-        exit $withError
+        exit $withErrorBecauseOfFailedPreConditions
     }
 
     # Checking Powershell Version Minimum Requirements
@@ -23,7 +20,7 @@ function Test-Pre-Conditions {
             "You must have PowerShell v2 or higher to use Chocolatey.`n" +
             "You are using PowerShellVersion $powerShellVersion.")
         Write-Error $message
-        exit $withError
+        exit $withErrorBecauseOfFailedPreConditions
     }
 
     try { # Checking .NET Version Minimum Requirements
@@ -38,7 +35,7 @@ function Test-Pre-Conditions {
             "You must have .NET Framework 4.8 or higher to use Chocolatey.`n" +
             "You are using .NET Framework Version $dotNetVersion.")
         Write-Error $message
-        exit $withError
+        exit $withErrorBecauseOfFailedPreConditions
     }
 
     # Checking if running as root/administrator
@@ -47,15 +44,16 @@ function Test-Pre-Conditions {
     if (-not $runningAsAdministrator) {
         $message = ("You must run this script as an Administrator.")
         Write-Error $message
-        exit $withError
+        exit $withErrorBecauseOfFailedPreConditions
     }
 
     # Checking if Chocolatey is installed
-    $chocoleteyIsNotInstalled = -not  (Get-Command choco -ErrorAction SilentlyContinue)
+    $chocoleteyIsNotInstalled = -not (Get-Command choco -ErrorAction SilentlyContinue)
     if ($chocoleteyIsNotInstalled) {
         Write-Host "Chocolatey is not installed. Now installing chocolatey." -ForegroundColor Yellow
         Set-ExecutionPolicy Bypass -Scope Process -Force
         [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
-        (New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1') | Invoke-Expression
+        $chocoInstallScript = ('https://community.chocolatey.org/install.ps1')
+        (New-Object System.Net.WebClient).DownloadString($chocoInstallScript) | Invoke-Expression
     }
 }

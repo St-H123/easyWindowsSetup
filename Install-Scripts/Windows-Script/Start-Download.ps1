@@ -4,7 +4,8 @@ function Start-Download {
         [switch]$all,
         [switch]$developerTools,
         [switch]$essentialPackages,
-        [switch]$gamingPackages,[switch]$productivityTools,
+        [switch]$gamingPackages,
+        [switch]$productivityTools,
         [switch]$powerTools
     )   
 
@@ -34,31 +35,40 @@ function Start-Download {
     $commas = (",")
     $chosenCatagories = $choice.Split($commas)
     foreach ($catagory in $chosenCatagories) {
-
         $relitivePathToFiles = ("../../Lists-of-Programs/")
-        $file = ($relitivePathToFiles + $files[[int]$catagory])
-        $fileDoesNotExist = -not (Test-Path $file)
-        if ($fileDoesNotExist) {
-            Write-Error "Error, File not found: $file"
-            continue # to the category (that is stored in a different file)
-        }
-
-        $programms = Get-Content $file
-        foreach ($program in $programms) {
-
-            $programIsAlreadyInstalled = (Get-Command $program -ErrorAction SilentlyContinue)
-            if ($programIsAlreadyInstalled) {
-                Write-Host "The program `"$program`" is installed."
-                continue # to the next program on the list
-            } 
-
-            $command = "choco install $program -y"
-            Invoke-Expression $command
-        }
+        $path = ($relitivePathToFiles + $catagory)
+        Add-Programms-from-File -path $path
+        
     }
 
     Write-Host "Done installing apps using chocolatey!"
     Add-Finder
+}
+
+function Add-Programms-from-File {
+    param (
+        [String]$path
+    )
+
+    $file = ($relitivePathToFiles + $files[[int]$catagory])
+    $fileDoesNotExist = -not (Test-Path $file)
+    if ($fileDoesNotExist) {
+        Write-Error "Error, File not found: $file"
+        exit $withErrorBecauseOfMissingFile
+    }
+
+    $programms = Get-Content $file
+    foreach ($program in $programms) {
+
+        $programIsAlreadyInstalled = (Get-Command $program -ErrorAction SilentlyContinue)
+        if ($programIsAlreadyInstalled) {
+            Write-Host "The program `"$program`" is installed."
+            continue # to the next program on the list
+        } 
+
+        $command = "choco install $program -y"
+        Invoke-Expression $command
+    }
 }
 
 function Add-Finder { 
